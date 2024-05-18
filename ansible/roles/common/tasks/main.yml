@@ -1,0 +1,11 @@
+- name: Install Python on remote host
+  raw: sudo apt-get update && sudo apt-get install -y python3
+
+- name: Update apt and install dependencies
+  apt:
+    update_cache: yes
+    name:
+      - docker.io
+      - docker-compose
+      - nginx
+
