@@ -3,25 +3,14 @@
     path: /opt/my-portfolio-blog
     state: directory
 
-- name: Copy docker-compose.yml
-  copy:
-    src: "{{ playbook_dir }}/../docker-compose.yml"
-    dest: /opt/my-portfolio-blog/docker-compose.yml
+- name: Clone the repository
+  git:
+    repo: 'https://github.com/kojikokojiko/my-portfolio-blog.git'
+    dest: /opt/my-portfolio-blog
+    version: main 
 
-- name: Copy backend directory
-  copy:
-    src: "{{ playbook_dir }}/../backend/"
-    dest: /opt/my-portfolio-blog/backend/
-    remote_src: no
-    directory_mode: yes
 
-- name: Copy frontend directory
-  copy:
-    src: "{{ playbook_dir }}/../frontend/"
-    dest: /opt/my-portfolio-blog/frontend/
-    remote_src: no
-    directory_mode: yes
 - name: Build and run Docker containers
-  command: docker-compose up --build -d
+  command: docker compose up --build -d
   args:
     chdir: /opt/my-portfolio-blog

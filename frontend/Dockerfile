@@ -1,5 +1,5 @@
 # Frontend Dockerfile
-FROM node:18-alpine
+FROM node:18-alpine AS base
 
 WORKDIR /app
 
@@ -8,6 +8,11 @@ RUN npm install
 
 COPY frontend/ ./
 
-RUN npm run build
+# Development stage
+FROM base AS development
+CMD ["npm", "start"]
 
+# Production stage
+FROM base AS production
+RUN npm run build
 CMD ["npx", "serve", "-s", "build"]

@@ -4,12 +4,23 @@ services:
     build:
       context: .
       dockerfile: frontend/Dockerfile
+      target: development
     ports:
       - "3000:3000"
+    volumes:
+      - ./frontend:/app
+    environment:
+      - NODE_ENV=development
+
 
   backend:
     build:
       context: .
       dockerfile: backend/Dockerfile
+      target: development
     ports:
       - "8080:8080"
+    volumes:
+      - ./backend:/app
+    environment:
+      - NODE_ENV=development

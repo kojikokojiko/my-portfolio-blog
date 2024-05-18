@@ -11,7 +11,7 @@ deploy:
 
 # ローカル開発環境のセットアップ
 .PHONY: up-build
-build:
+up-build:
 	@echo "Starting local development environment with build..."
 	docker-compose up --build
 
@@ -19,10 +19,13 @@ build:
 .PHONY: up
 up:
 	@echo "Starting local development environment..."
-	docker-compose up
-
+	docker-compose up -f 
+	
 # ローカル開発環境のセットアップ
 .PHONY: down
 down:
 	@echo "Stop local development environment..."
 	docker-compose down
+
+
+# ssh-keygen -R tk2-412-47176.vs.sakura.ne.jp
