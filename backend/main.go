@@ -29,7 +29,7 @@ func main() {
 
 	r := gin.Default()
 	r.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"http://localhost:3000", "https://gantaso470.microcms.io"}, // フロントエンドとMicroCMSのドメインを設定
+		AllowOrigins:     []string{"http://tk2-412-47176.vs.sakura.ne.jp", "https://gantaso470.microcms.io"}, // フロントエンドとMicroCMSのドメインを設定
 		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
 		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
 		ExposeHeaders:    []string{"Content-Length"},
