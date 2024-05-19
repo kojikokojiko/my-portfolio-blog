@@ -47,9 +47,9 @@
   command: ufw reload
   tags: firewall
 
-# - name: Wait for port 80 to be open
-#   wait_for:
-#     port: 80
-#     delay: 10
-#     state: started
-#   tags: firewall
+- name: Wait for port 80 to be open
+  wait_for:
+    port: 80
+    delay: 10
+    state: started
+  tags: firewall
