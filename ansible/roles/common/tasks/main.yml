@@ -13,36 +13,7 @@
   apt:
     update_cache: yes
     name:
-      - nginx
       - git
       - curl
       - htop
       - ufw
-
-- name: Allow 'Nginx Full' traffic
-  ufw:
-    rule: allow
-    name: 'Nginx Full'
-  tags: firewall
-
-- name: Allow OpenSSH traffic
-  ufw:
-    rule: allow
-    name: 'OpenSSH'
-  tags: firewall
-
-- name: Enable UFW
-  ufw:
-    state: enabled
-  tags: firewall
-
-- name: Reload UFW to apply changes
-  command: ufw reload
-  tags: firewall
-
-- name: Wait for port 80 to be open
-  wait_for:
-    port: 80
-    delay: 10
-    state: started
-  tags: firewall

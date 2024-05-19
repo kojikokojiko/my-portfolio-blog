@@ -35,5 +35,9 @@ down:
 	@echo "Stop local development environment..."
 	docker-compose down
 
+.PHONY: tree
+tree:
+	tree -I 'node_modules|vendor|.git' > directory_structure.txt
+
 
 # ssh-keygen -R tk2-412-47176.vs.sakura.ne.jp

@@ -9,8 +9,12 @@ services:
       - "3000:3000"
     volumes:
       - ./frontend:/app
+    env_file:
+      - ./frontend/.env.dev
     environment:
       - NODE_ENV=development
+      - HOST=0.0.0.0
+      - DANGEROUSLY_DISABLE_HOST_CHECK=true
 
 
   backend:
@@ -24,3 +28,20 @@ services:
       - ./backend:/app
     environment:
       - NODE_ENV=development
+
+  nginx:
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+      target: dev
+
+    ports:
+      - "80:80"
+    depends_on:
+      - frontend
+      - backend
+
+
+networks:
+  mynetwork:
+    driver: bridge

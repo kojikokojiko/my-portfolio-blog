@@ -9,6 +9,13 @@ services:
       - "3000:3000"  # Serve on port 80 for HTTP
     environment:
       - NODE_ENV=production
+      - HOST=0.0.0.0
+      - DANGEROUSLY_DISABLE_HOST_CHECK=true
+    env_file:
+      - ./frontend/.env.prod
+    networks:
+      - mynetwork
+
 
   backend:
     build:
@@ -19,3 +26,22 @@ services:
       - "8080:8080"
     environment:
       - NODE_ENV=production
+    networks:
+      - mynetwork
+
+  nginx:
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+      target: prod
+    ports:
+      - "80:80"
+    depends_on:
+      - frontend
+      - backend
+    networks:
+      - mynetwork
+
+networks:
+  mynetwork:
+    driver: bridge

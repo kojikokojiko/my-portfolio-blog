@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const instance = axios.create({
-  baseURL: 'http://tk2-412-47176.vs.sakura.ne.jp',
+  baseURL: process.env.REACT_APP_SERVER_NAME,
 });
 
 export default instance;
