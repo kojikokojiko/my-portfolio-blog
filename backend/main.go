@@ -28,11 +28,11 @@ func main() {
 	endpoint := os.Getenv("MICROCMS_ENDPOINT")
 
 	r := gin.Default()
-
 	r.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"http://localhost:3000"},
-		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE"},
-		AllowHeaders:     []string{"Origin", "Content-Type", "Accept"},
+		AllowOrigins:     []string{"http://localhost:3000", "https://gantaso470.microcms.io"}, // フロントエンドとMicroCMSのドメインを設定
+		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
+		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
+		ExposeHeaders:    []string{"Content-Length"},
 		AllowCredentials: true,
 	}))
 

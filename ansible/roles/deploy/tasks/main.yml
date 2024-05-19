@@ -11,6 +11,6 @@
 
 
 - name: Build and run Docker containers
-  command: docker compose up --build -d
+  command: docker compose -f docker-compose.prod.yml up -d --build
   args:
     chdir: /opt/my-portfolio-blog

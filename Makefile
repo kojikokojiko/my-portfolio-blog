@@ -9,6 +9,14 @@ deploy:
 	@echo "Running Ansible playbook..."
 	ansible-playbook -i $(INVENTORY) $(PLAYBOOK) --ask-become-pass
 
+
+# Ansibleプレイブックの実行
+.PHONY: deploy-debug
+deploy-debug:
+	@echo "Running Ansible playbook..."
+	ansible-playbook -i $(INVENTORY) $(PLAYBOOK) --ask-become-pass -vvv
+
+
 # ローカル開発環境のセットアップ
 .PHONY: up-build
 up-build:
