@@ -5,23 +5,11 @@
 │   ├── inventory
 │   ├── playbook.yml
 │   └── roles
-│       ├── common
-│       │   └── tasks
-│       │       └── main.yml
-│       ├── deploy
-│       │   └── tasks
-│       │       └── main.yml
-│       ├── docker
-│       │   └── tasks
-│       │       └── main.yml
-│       └── nginx
-│           ├── handlers
-│           │   └── main.yml
-│           ├── tasks
-│           │   └── main.yml
-│           └── templates
-│               ├── my_site.j2
-│               └── nginx.conf.j2
+│       └── vps
+│           ├── deploy.yml
+│           ├── docker.yml
+│           ├── main.yml
+│           └── packages.yml
 ├── backend
 │   ├── Dockerfile
 │   ├── go.mod
@@ -63,6 +51,7 @@
     ├── Dockerfile
     ├── nginx.conf
     └── sites-available
-        └── my_portfolio
+        ├── my_portfolio.dev
+        └── my_portfolio.prod
 
-21 directories, 45 files
+12 directories, 43 files

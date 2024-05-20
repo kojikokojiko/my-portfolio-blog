@@ -2,7 +2,4 @@
   become: true
   become_method: sudo
   roles:
-    - common
-    - docker
-    # - nginx
-    - deploy
+    - vps
