@@ -14,7 +14,7 @@ deploy:
 .PHONY: deploy-debug
 deploy-debug:
 	@echo "Running Ansible playbook..."
-	ansible-playbook -i $(INVENTORY) $(PLAYBOOK) --ask-become-pass -vvv
+	ansible-playbook -i $(INVENTORY) $(PLAYBOOK)  -e ansible_python_interpreter=/usr/bin/python3 --ask-become-pass -vvv
 
 
 # ローカル開発環境のセットアップ
@@ -27,7 +27,7 @@ up-build:
 .PHONY: up
 up:
 	@echo "Starting local development environment..."
-	docker-compose up -f 
+	docker-compose up -d
 	
 # ローカル開発環境のセットアップ
 .PHONY: down
