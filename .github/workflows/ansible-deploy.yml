@@ -33,7 +33,7 @@ jobs:
     - name: Create SSH config
       run: |
         mkdir -p ~/.ssh
-        echo -e "Host my-portfolio\n  HostName tk2-412-47176.vs.sakura.ne.jp\n  User debian" > ~/.ssh/config
+        echo -e "Host my-portfolio\n  HostName tk2-412-47176.vs.sakura.ne.jp\n  User ubuntu\n  IdentityFile ~/.ssh/id_rsa" > ~/.ssh/config
         chmod 600 ~/.ssh/config
 
     - name: Run Ansible Playbook with become password
