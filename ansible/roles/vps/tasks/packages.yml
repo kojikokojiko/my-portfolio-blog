@@ -1,0 +1,303 @@
+- name: Test SSH connection
+  command: whoami
+
+- name: Update and upgrade apt packages
+  apt:
+    update_cache: yes
+    upgrade: dist
+
+- name: Install common packages
+  apt:
+    name:
+      - curl
+      - vim
+      - git
+      - ufw
+    state: present
+
+
+# Nginx
+
+- name: Install Nginx
+  apt:
+    name: nginx
+    state: present
+
+- name: Start and enable Nginx
+  systemd:
+    name: nginx
+    enabled: yes
+    state: started
+
+- name: Copy Nginx configuration
+  template:
+    src: nginx.conf.j2
+    dest: /etc/nginx/nginx.conf
+  notify: reload nginx
+
+- name: Allow Nginx service through firewall
+  ufw:
+    rule: allow
+    name: "Nginx Full"
+
+
+- name: Allow SSH through firewall
+  ufw:
+    rule: allow
+    name: "OpenSSH"
+
+- name: Enable UFW
+  ufw:
+    state: enabled
+
+
+# backend
+
+- name: Install Go
+  apt:
+    name: golang
+    state: present
+
+- name: Copy application code
+  copy:
+    src: ../../../backend/
+    dest: /var/www/backend/
+    owner: www-data
+    group: www-data
+    mode: '0755'
+
+
+- name: Check if go.mod exists
+  stat:
+    path: /var/www/backend/go.mod
+  register: go_mod
+
+
+- name: Initialize Go module
+  command: go mod init my-portfolio-blog-backend
+  args:
+    chdir: /var/www/backend
+  when: not go_mod.stat.exists
+
+- name: Tidy Go module
+  command: go mod tidy
+  args:
+    chdir: /var/www/backend
+
+- name: Build Go application
+  command: "go build -o main"
+  args:
+    chdir: /var/www/backend
+
+- name: Create systemd service for Go application
+  copy:
+    content: |
+      [Unit]
+      Description=Go Backend Service
+      After=network.target
+
+      [Service]
+      ExecStart=/var/www/backend/main
+      WorkingDirectory=/var/www/backend
+      Restart=always
+      User=www-data
+      Group=www-data
+      EnvironmentFile=/var/www/backend/.env
+
+      [Install]
+      WantedBy=multi-user.target
+    dest: /etc/systemd/system/go-backend.service
+    mode: '0644'
+
+- name: Enable and start Go application service
+  systemd:
+    name: go-backend
+    enabled: yes
+    state: started
+
+
+# frontend
+
+- name: Install Node.js
+  apt:
+    name: nodejs
+    state: present
+
+- name: Install npm
+  apt:
+    name: npm
+    state: present
+
+
+# おそい
+- name: Copy frontend application code
+  copy:
+    src: ../../../frontend/
+    dest: /var/www/frontend/
+    owner: www-data
+    group: www-data
+    mode: '0755'
+
+
+# フロントエンドアプリケーションコードのコピー
+# - name: Synchronize frontend application code
+#   synchronize:
+#     src: ../../../frontend/
+#     dest: /var/www/frontend/
+#     rsync_opts:
+#       - "--delete"
+#   delegate_to: localhost
+
+# - name: Set ownership and permissions for frontend directory
+#   file:
+#     path: /var/www/frontend
+#     owner: www-data
+#     group: www-data
+#     recurse: yes
+#     mode: '0755'
+
+# Rsyncの残骸＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
+# - name: Ensure the target directory exists
+#   file:
+#     path: /var/www/frontend
+#     state: directory
+#     owner: ubuntu
+#     group: www-data
+#     mode: '0775'
+
+# - name: Change ownership of frontend directory
+#   command: sudo chown -R ubuntu:www-data /var/www/frontend
+
+# - name: Change permissions of frontend directory
+#   command: sudo chmod -R 775 /var/www/frontend
+
+
+# - name: Synchronize frontend directory excluding node_modules
+#   ansible.builtin.command:
+#     cmd: rsync -avz --exclude='node_modules' -e 'ssh -i ~/.ssh/my-portfolio/my-portfolio' ../frontend/ ubuntu@tk2-412-47176.vs.sakura.ne.jp:/var/www/frontend/
+#   delegate_to: localhost
+#   args:
+#     chdir: "{{ playbook_dir }}"
+#   vars:
+#     ansible_ssh_private_key_file: "~/.ssh/my-portfolio/my-portfolio"
+
+
+# - name: Synchronize frontend directory excluding node_modules
+#   synchronize:
+#     src: "{{ playbook_dir }}/../frontend/"
+#     dest: /var/www/frontend/
+#     recursive: yes
+#     rsync_opts:
+#       - "--no-motd"
+#       - "--exclude=node_modules"
+#     # delegate_to: "{{ inventory_hostname }}"
+#   delegate_to: localhost
+
+
+# - name: Rsync frontend files
+#   ansible.builtin.command:
+#     cmd: rsync -av --exclude='node_modules' /Users/koji.iwase/mydev/my-portfolio-blog/frontend/ /var/www/frontend/
+#   become: yes
+#   delegate_to: localhost
+
+# - name: Ensure node_modules directory is absent
+#   file:
+#     path: /var/www/frontend/node_modules
+#     state: absent
+
+# - name: Synchronize frontend directory excluding node_modules
+#   synchronize:
+#     src: "{{ playbook_dir }}/../../frontend/"
+#     dest: /var/www/frontend/
+#     rsync_opts:
+#       - "--no-motd"
+#       - "--exclude=node_modules"
+#   delegate_to: localhost
+
+# サービスの停止
+- name: Stop Nginx service
+  systemd:
+    name: nginx
+    state: stopped
+
+- name: Stop Go backend service
+  systemd:
+    name: go-backend
+    state: stopped
+
+- name: Stop frontend service
+  systemd:
+    name: node-frontend
+    state: stopped
+
+
+
+
+- name: Clean npm cache
+  command: npm cache clean --force
+  args:
+    chdir: /var/www/frontend
+    
+- name: Install frontend dependencies
+  command: "npm install"
+  args:
+    chdir: /var/www/frontend
+
+- name: Build frontend application
+  command: "npm run build"
+  args:
+    chdir: /var/www/frontend
+
+
+
+# サービスの再起動
+- name: Start and enable Nginx service
+  systemd:
+    name: nginx
+    enabled: yes
+    state: started
+
+- name: Start and enable Go backend service
+  systemd:
+    name: go-backend
+    enabled: yes
+    state: started
+
+- name: Start and enable Node.js frontend service
+  systemd:
+    name: node-frontend
+    enabled: yes
+    state: started
+
+
+
+
+- name: Install serve globally
+  npm:
+    name: serve
+    global: yes
+
+- name: Create systemd service for frontend
+  copy:
+    content: |
+      [Unit]
+      Description=Node.js Frontend Service
+      After=network.target
+
+      [Service]
+      ExecStart=/usr/local/bin/serve -s build
+      WorkingDirectory=/var/www/frontend
+      Restart=always
+      User=www-data
+      Group=www-data
+
+      [Install]
+      WantedBy=multi-user.target
+    dest: /etc/systemd/system/node-frontend.service
+    mode: '0644'
+
+- name: Enable and start Node.js frontend service
+  systemd:
+    name: node-frontend
+    enabled: yes
+    state: started
