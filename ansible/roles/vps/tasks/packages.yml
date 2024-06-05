@@ -129,7 +129,7 @@
     state: present
 
 
-
+# おそい
 - name: Copy frontend application code
   copy:
     src: ../../../frontend/
@@ -138,6 +138,23 @@
     group: www-data
     mode: '0755'
 
+
+# フロントエンドアプリケーションコードのコピー
+# - name: Synchronize frontend application code
+#   synchronize:
+#     src: ../../../frontend/
+#     dest: /var/www/frontend/
+#     rsync_opts:
+#       - "--delete"
+#   delegate_to: localhost
+
+# - name: Set ownership and permissions for frontend directory
+#   file:
+#     path: /var/www/frontend
+#     owner: www-data
+#     group: www-data
+#     recurse: yes
+#     mode: '0755'
 
 # Rsyncの残骸＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
 # - name: Ensure the target directory exists
@@ -197,6 +214,25 @@
 #       - "--exclude=node_modules"
 #   delegate_to: localhost
 
+# サービスの停止
+- name: Stop Nginx service
+  systemd:
+    name: nginx
+    state: stopped
+
+- name: Stop Go backend service
+  systemd:
+    name: go-backend
+    state: stopped
+
+- name: Stop frontend service
+  systemd:
+    name: node-frontend
+    state: stopped
+
+
+
+
 - name: Clean npm cache
   command: npm cache clean --force
   args:
@@ -211,6 +247,30 @@
   command: "npm run build"
   args:
     chdir: /var/www/frontend
+
+
+
+# サービスの再起動
+- name: Start and enable Nginx service
+  systemd:
+    name: nginx
+    enabled: yes
+    state: started
+
+- name: Start and enable Go backend service
+  systemd:
+    name: go-backend
+    enabled: yes
+    state: started
+
+- name: Start and enable Node.js frontend service
+  systemd:
+    name: node-frontend
+    enabled: yes
+    state: started
+
+
+
 
 - name: Install serve globally
   npm:

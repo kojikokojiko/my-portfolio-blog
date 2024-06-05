@@ -39,6 +39,6 @@ jobs:
     - name: Run Ansible Playbook with become password
       run: |
         export ANSIBLE_BECOME_PASS="${{ secrets.ANSIBLE_BECOME_PASS }}"
-        ansible-playbook ansible/playbook.yml -i ansible/inventory --extra-vars "ansible_become_pass=$ANSIBLE_BECOME_PASS"
+        ansible-playbook ansible/playbook.yml -i ansible/inventory --extra-vars "ansible_become_pass=$ANSIBLE_BECOME_PASS" -vvv
       env:
         ANSIBLE_HOST_KEY_CHECKING: 'false'
