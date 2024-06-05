@@ -1,3 +1,6 @@
+- name: Test SSH connection
+  command: whoami
+
 - name: Update and upgrade apt packages
   apt:
     update_cache: yes
