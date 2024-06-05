@@ -6,17 +6,18 @@
 │   ├── playbook.yml
 │   └── roles
 │       └── vps
-│           └── tasks
-│               ├── deploy.yml
-│               ├── main.yml
-│               └── packages.yml
+│           ├── handlers
+│           │   └── main.yml
+│           ├── tasks
+│           │   ├── main.yml
+│           │   └── packages.yml
+│           └── templates
+│               └── nginx.conf.j2
 ├── backend
 │   ├── Dockerfile
 │   ├── go.mod
 │   ├── go.sum
-│   ├── main.go
-│   └── tmp
-│       └── main
+│   └── main.go
 ├── directory_structure.txt
 ├── docker-compose.prod.yml
 ├── docker-compose.yml
@@ -54,4 +55,4 @@
         ├── my_portfolio.dev
         └── my_portfolio.prod
 
-13 directories, 42 files
+14 directories, 42 files
