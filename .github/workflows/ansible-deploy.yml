@@ -1,0 +1,44 @@
+name: Ansible Deploy
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.x'
+
+    - name: Install Ansible and sshpass
+      run: |
+        python -m pip install --upgrade pip
+        pip install ansible
+        sudo apt-get update
+        sudo apt-get install -y sshpass
+
+    - name: Install SSH key
+      uses: webfactory/ssh-agent@v0.5.3
+      with:
+        ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+    - name: Create SSH config
+      run: |
+        mkdir -p ~/.ssh
+        echo -e "Host my-portfolio\n  HostName tk2-412-47176.vs.sakura.ne.jp\n  User ubuntu\n  IdentityFile ~/.ssh/id_rsa" > ~/.ssh/config
+        chmod 600 ~/.ssh/config
+
+    - name: Run Ansible Playbook with become password
+      run: |
+        export ANSIBLE_BECOME_PASS="${{ secrets.ANSIBLE_BECOME_PASS }}"
+        ansible-playbook ansible/playbook.yml -i ansible/inventory --extra-vars "ansible_become_pass=$ANSIBLE_BECOME_PASS"
+      env:
+        ANSIBLE_HOST_KEY_CHECKING: 'false'
