@@ -1,4 +1,3 @@
-# .github/workflows/ansible-deploy.yml
 name: Ansible Deploy
 
 on:
@@ -24,13 +23,20 @@ jobs:
         python -m pip install --upgrade pip
         pip install ansible
 
-    - name: Run Ansible Playbook
-      run: ansible-playbook ansible/playbook.yml -i ansible/inventory
-      env:
-        ANSIBLE_HOST_KEY_CHECKING: 'false'
-        ANSIBLE_PRIVATE_KEY_FILE: ${{ secrets.SSH_PRIVATE_KEY }}
-      
     - name: Install SSH key
       uses: webfactory/ssh-agent@v0.5.3
       with:
         ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+    - name: Create SSH config
+      run: |
+        mkdir -p ~/.ssh
+        echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+        chmod 600 ~/.ssh/id_rsa
+        echo -e "Host my-portfolio\n  HostName tk2-412-47176.vs.sakura.ne.jp\n  User debian\n  IdentityFile ~/.ssh/id_rsa" > ~/.ssh/config
+        chmod 600 ~/.ssh/config
+
+    - name: Run Ansible Playbook
+      run: ansible-playbook ansible/playbook.yml -i ansible/inventory
+      env:
+        ANSIBLE_HOST_KEY_CHECKING: 'false'
