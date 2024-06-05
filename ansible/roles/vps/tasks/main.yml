@@ -1,4 +1,0 @@
-# ansible/roles/vps/main.yml
-- import_tasks: packages.yml
-# - import_tasks: docker.yml
-# - import_tasks: deploy.yml
